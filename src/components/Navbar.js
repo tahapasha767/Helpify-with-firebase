@@ -1,5 +1,8 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { getAuth,onAuthStateChanged } from 'firebase/auth'
+import { app } from './Firebase'
+import { useEffect, useState } from 'react'
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -7,12 +10,22 @@ const navigation = [
   { name: 'Projects', href: '#', current: false },
   { name: 'Calendar', href: '#', current: false },
 ]
+const signin=[{name:'Sign in',href:'#',current:true}]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default function Navbar() {
+    const auth=getAuth(app);
+    useEffect(()=>{
+        const unsubscribe=onAuthStateChanged(auth,(user)=>
+        {
+           setuser(user); 
+        });
+        return ()=>unsubscribe();
+    },[])
+    const [user,setuser]=useState();
   return (
     <Disclosure as="nav" className="bg-black rounded-3xl relative top-8 mx-4 py-2 border-cyan-400 border-[0.3px] shadow-cyan-500 shadow-2xl">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -70,7 +83,7 @@ export default function Navbar() {
                   <span className="sr-only">Open user menu</span>
                   <img
                     alt=""
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    src={user?user.photoURL:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                     className="h-8 w-8 rounded-full"
                   />
                 </MenuButton>
